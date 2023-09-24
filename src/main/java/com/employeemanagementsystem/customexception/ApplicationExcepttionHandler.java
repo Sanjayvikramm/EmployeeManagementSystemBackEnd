@@ -12,11 +12,26 @@ public class ApplicationExcepttionHandler {
 	
 	@ExceptionHandler
 	public ResponseEntity<ErrorStructure> emailNotFoundException(EmailNotFoundException exception){
+		
 		ErrorStructure errorStructure = new ErrorStructure();
 		errorStructure.setStatus(HttpStatus.NOT_FOUND.value());
 		errorStructure.setMessage("data not found");
 		errorStructure.setRootCause(exception.getMessage());
+		
 		return new ResponseEntity<ErrorStructure>(errorStructure,HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure> employeeIdNotFoundException(EmployeeIdNotFoundException exception){
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatus(HttpStatus.NOT_FOUND.value());
+		errorStructure.setRootCause(exception.getMessage());
+		errorStructure.setMessage("Data Not Found");
+		
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure,HttpStatus.NOT_FOUND);
+		
 	}
 
 }
