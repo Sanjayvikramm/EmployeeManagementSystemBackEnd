@@ -16,6 +16,7 @@ import com.employeemanagementsystem.service.EmployeeService;
 import com.employeemanagementsystem.util.ResponseStructure;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,6 +45,11 @@ public class EmployeeController {
 		return service.update(id, name);
 	}
 	
+	@PutMapping("/updateemail")
+	public ResponseEntity<ResponseStructure<EmployeeResponse>> update(String email, int id){
+		return service.update(email, id);
+	}
+	
 	@GetMapping("/findById")
 	public ResponseEntity<ResponseStructure<EmployeeResponse>> findById(@RequestParam int id){
 		return service.findById(id);
@@ -52,6 +58,11 @@ public class EmployeeController {
 	@GetMapping("/findAll")
 	public ResponseEntity<ResponseStructure<List<EmployeeResponse>>> findAll(){
 		return service.findAll();
+	}
+	
+	@DeleteMapping("delete")
+	public ResponseEntity<ResponseStructure<String>> delete(@RequestParam int id){
+		return  service.delete(id);
 	}
 	
 }

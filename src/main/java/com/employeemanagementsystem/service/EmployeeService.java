@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.employeemanagementsystem.customexception.EmailNotFoundException;
 import com.employeemanagementsystem.customexception.EmployeeIdNotFoundException;
+import com.employeemanagementsystem.customexception.ExcistingEmailException;
 import com.employeemanagementsystem.dto.EmployeeRequest;
 import com.employeemanagementsystem.dto.EmployeeResponse;
 import com.employeemanagementsystem.entity.Employee;
@@ -25,6 +26,13 @@ public class EmployeeService {
 	
 	
 	public ResponseEntity<ResponseStructure<EmployeeResponse>> create(EmployeeRequest request){
+		
+		List<Employee> employeeList=repository.findAll();
+		for(Employee emp:employeeList) {
+			if(emp.getEmail().equals(request.getEmail())) {
+				throw new ExcistingEmailException("Email Id Is Already In Excistence");
+			}
+		}
 		Employee employee = new Employee();
 		employee.setEmail(request.getEmail());
 		employee.setName(request.getName());
@@ -47,7 +55,7 @@ public class EmployeeService {
 	}
 	
 	public ResponseEntity<ResponseStructure<String>> login(String email,String password){
-		System.out.println(email);
+	
 		Optional<Employee> optionalEmployee = repository.findByEmail(email);
 		
 		if(optionalEmployee.isPresent()) {
@@ -72,6 +80,7 @@ public class EmployeeService {
 	}
 	
 	public ResponseEntity<ResponseStructure<List<EmployeeResponse>>> findAll(){
+		
 		List<Employee> employee = repository.findAll();
 		
 		List<EmployeeResponse> employeeResponse = new ArrayList<EmployeeResponse>();
@@ -95,6 +104,7 @@ public class EmployeeService {
 	}
 	
 	public ResponseEntity<ResponseStructure<EmployeeResponse>> findById(int id){
+		
 		Optional<Employee> optionalEmployee = repository.findById(id);
 		
 		if(optionalEmployee.isPresent()) {
@@ -116,6 +126,7 @@ public class EmployeeService {
 		}
 	
 	public ResponseEntity<ResponseStructure<EmployeeResponse>> update(int id, String name){
+		
 		Optional<Employee> optionalEmployee = repository.findById(id);
 		
 		if(optionalEmployee.isPresent()) {
@@ -136,6 +147,50 @@ public class EmployeeService {
 			return new ResponseEntity<ResponseStructure<EmployeeResponse>>(responseStructure,HttpStatus.OK);
 		}
 		throw new EmployeeIdNotFoundException("Employee ID Not Found");
+		
+	}
+	
+public ResponseEntity<ResponseStructure<EmployeeResponse>> update(String email,int id){
+		
+		Optional<Employee> optionalEmployee = repository.findById(id);
+		
+		if(optionalEmployee.isPresent()) {
+			Employee employee = optionalEmployee.get();
+			employee.setEmail(email);
+			employee= repository.save(employee);
+			
+			EmployeeResponse employeeResponse = new EmployeeResponse();
+			employeeResponse.setId(employee.getId());
+			employeeResponse.setName(employee.getName());
+			employeeResponse.setEmail(employee.getEmail());
+			
+			ResponseStructure<EmployeeResponse> responseStructure = new ResponseStructure<EmployeeResponse>();
+			responseStructure.setStatus(HttpStatus.FOUND.value());
+			responseStructure.setMessage("Data Updated");
+			responseStructure.setData(employeeResponse);
+			
+			return new ResponseEntity<ResponseStructure<EmployeeResponse>>(responseStructure,HttpStatus.OK);
+		}
+		throw new EmployeeIdNotFoundException("Employee ID Not Found");
+		
+	}
+	
+	public ResponseEntity<ResponseStructure<String>> delete(int id){
+		
+		Optional<Employee> optionalEmployee = repository.findById(id);
+		
+		if(optionalEmployee.isPresent()) {
+			Employee employee = optionalEmployee.get();
+			repository.delete(employee);
+			
+			ResponseStructure<String> responseStructure = new ResponseStructure<String>();
+			responseStructure.setStatus(HttpStatus.OK.value());
+			responseStructure.setMessage("Data Deleted");
+			responseStructure.setData("Employee of id "+id+" is deleted");
+			
+			return new ResponseEntity<ResponseStructure<String>>(responseStructure,HttpStatus.OK);
+		}
+		throw new EmployeeIdNotFoundException("Employee Id Not Found");
 		
 	}
 		

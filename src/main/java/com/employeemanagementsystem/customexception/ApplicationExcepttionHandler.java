@@ -29,9 +29,20 @@ public class ApplicationExcepttionHandler {
 		errorStructure.setRootCause(exception.getMessage());
 		errorStructure.setMessage("Data Not Found");
 		
-		
 		return new ResponseEntity<ErrorStructure>(errorStructure,HttpStatus.NOT_FOUND);
 		
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure> excistingEmailException(ExcistingEmailException exception){
+		
+		ErrorStructure errorStructure = new ErrorStructure();
+		errorStructure.setStatus(HttpStatus.BAD_REQUEST.value());
+		errorStructure.setMessage("Data Already found");
+		errorStructure.setRootCause(exception.getMessage());
+		
+		return new ResponseEntity<ErrorStructure>(errorStructure,HttpStatus.BAD_REQUEST);
+	}
+	
 
 }
